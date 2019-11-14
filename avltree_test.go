@@ -27,6 +27,7 @@ func TestBinaryTree_Insert(t *testing.T) {
 	datalist := Array2Data(data)
 
 	fmt.Println(datalist)
+	LinePrint(datalist)
 }
 
 func TestLinePrint(t *testing.T) {

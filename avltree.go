@@ -149,15 +149,23 @@ func Tree2Array(t *BinaryTree) [][]*BinaryNode {
 
 func Array2Data(bl [][]*BinaryNode) [][]int64 {
 	h := len(bl)
-	length := len(bl[h-1])
+	length := int(math.Exp2(float64(h))) - 1
 	tmp := make([][]int64, 0, h)
 	for i := 0; i < h; i++ {
 		temp := make([]int64, length, length)
 		tmp = append(tmp, temp)
 	}
-	fmt.Println(h)
-	fmt.Println(length)
-	fmt.Println(int(math.Exp2(float64(h))))
+
+	tmp[0][int(math.Exp2(float64(h-1)))-1] = 1
+	for i := 1; i < h; i++ {
+		jiange := int(math.Exp2(float64(h - i - 1)))
+		for j := 0; j < length; j++ {
+			if tmp[i-1][j] == 1 {
+				tmp[i][j-jiange] = 1
+				tmp[i][j+jiange] = 1
+			}
+		}
+	}
 
 	return tmp
 }
