@@ -5,33 +5,79 @@ import (
 	"math"
 )
 
+type Node interface {
+	GetData() int64
+	GetLeft() Node
+	GetRight() Node
+	SetData(int64)
+	SetLeft(Node)
+	SetRight(Node)
+}
+
+type Tree interface {
+	GetRoot() Node
+	Find(int64) Node
+	FindMin() Node
+	FindMax() Node
+	Insert(int64)
+	Delete(int64)
+}
+
 type BinaryNode struct {
-	left  *BinaryNode
-	right *BinaryNode
+	left  Node
+	right Node
 	data  int64
 }
 
+func (bn *BinaryNode) GetData() int64 {
+	return bn.data
+}
+
+func (bn *BinaryNode) GetLeft() Node {
+	return bn.left
+}
+
+func (bn *BinaryNode) GetRight() Node {
+	return bn.right
+}
+
+func (bn *BinaryNode) SetData(data int64) {
+	bn.data = data
+}
+
+func (bn *BinaryNode) SetLeft(n Node) {
+	bn.left = n
+}
+
+func (bn *BinaryNode) SetRight(n Node) {
+	bn.right = n
+}
+
 type BinaryTree struct {
-	root *BinaryNode
+	root Node
 }
 
-func (b *BinaryTree) Find(data int64) *BinaryNode {
-	if b.root == nil {
+func (bt *BinaryTree) GetRoot() Node {
+	return bt.root
+}
+
+func (bt *BinaryTree) Find(data int64) Node {
+	if bt.root == nil {
 		return nil
 	}
-	tmp := b.root
+	tmp := bt.root
 	for {
-		if tmp.data == data {
+		if tmp.GetData() == data {
 			return tmp
-		} else if tmp.data < data {
-			if tmp.right != nil {
-				tmp = tmp.right
+		} else if tmp.GetData() < data {
+			if tmp.GetRight() != nil {
+				tmp = tmp.GetRight()
 			} else {
 				return nil
 			}
 		} else {
-			if tmp.left != nil {
-				tmp = tmp.left
+			if tmp.GetLeft() != nil {
+				tmp = tmp.GetLeft()
 			} else {
 				return nil
 			}
@@ -39,98 +85,105 @@ func (b *BinaryTree) Find(data int64) *BinaryNode {
 	}
 }
 
-func (b *BinaryTree) FindMin() *BinaryNode {
-	if b.root == nil {
+func (bt *BinaryTree) FindMin() Node {
+	if bt.root == nil {
 		return nil
 	}
-	tmp := b.root
+	tmp := bt.root
 	for {
-		if tmp.left != nil {
-			tmp = tmp.left
+		if tmp.GetLeft() != nil {
+			tmp = tmp.GetLeft()
 		} else {
 			return tmp
 		}
 	}
 }
 
-func (b *BinaryTree) FIndMax() *BinaryNode {
-	if b.root == nil {
+func (bt *BinaryTree) FindMax() Node {
+	if bt.root == nil {
 		return nil
 	}
-	tmp := b.root
+	tmp := bt.root
 	for {
-		if tmp.right != nil {
-			tmp = tmp.right
+		if tmp.GetRight() != nil {
+			tmp = tmp.GetRight()
 		} else {
 			return tmp
 		}
 	}
 }
 
-func (b *BinaryTree) Insert(data int64) {
-	if b.root == nil {
-		b.root = &BinaryNode{
+func (bt *BinaryTree) Insert(data int64) {
+	if bt.root == nil {
+		bt.root = &BinaryNode{
 			left:  nil,
 			right: nil,
 			data:  data,
 		}
 		return
 	}
-	tmp := b.root
+	tmp := bt.root
 	for {
-		if tmp.data == data {
+		if tmp.GetData() == data {
 			return
-		} else if tmp.data < data {
-			if tmp.right != nil {
-				tmp = tmp.right
+		} else if tmp.GetData() < data {
+			if tmp.GetRight() != nil {
+				tmp = tmp.GetRight()
 			} else {
-				tmp.right = &BinaryNode{
+				tmp.SetRight(&BinaryNode{
 					left:  nil,
 					right: nil,
 					data:  data,
-				}
+				})
 			}
 		} else {
-			if tmp.left != nil {
-				tmp = tmp.left
+			if tmp.GetLeft() != nil {
+				tmp = tmp.GetLeft()
 			} else {
-				tmp.left = &BinaryNode{
+				tmp.SetLeft(&BinaryNode{
 					left:  nil,
 					right: nil,
 					data:  data,
-				}
+				})
 			}
 		}
 	}
 
 }
 
-func (b *BinaryTree) Delete(data int64) {
+func (bt *BinaryTree) Delete(data int64) {
 
 }
 
-func (b *BinaryTree) Display() {
-
+func (bt *BinaryTree) Display() {
+	PrintTree(bt)
 }
 
-func Tree2Array(t *BinaryTree) [][]*BinaryNode {
-	if t.root == nil {
+// 函数缺陷很明显，当tree过深过大时，性能不行。打印出来的效果也不好看。
+func PrintTree(t Tree) {
+	array := Tree2Array(t)
+	data := Array2Data(array)
+	LinePrint(data, 1)
+}
+
+func Tree2Array(t Tree) [][]Node {
+	if t.GetRoot() == nil {
 		return nil
 	}
-	var temp [][]*BinaryNode
-	temp = make([][]*BinaryNode, 0, 2)
+	var temp [][]Node
+	temp = make([][]Node, 0, 2)
 	depth := 0
-	temp = append(temp, []*BinaryNode{t.root})
+	temp = append(temp, []Node{t.GetRoot()})
 	for {
 		depth += 1
-		var nl = make([]*BinaryNode, 0, 2)
+		var nl = make([]Node, 0, 2)
 		length := len(temp[depth-1])
 		canBreak := true
 		for i := 0; i < length; i++ {
 			if temp[depth-1][i] != nil {
-				nl = append(nl, temp[depth-1][i].left)
-				nl = append(nl, temp[depth-1][i].right)
-				if temp[depth-1][i].left != nil || temp[depth-1][i].right != nil {
+				nl = append(nl, temp[depth-1][i].GetLeft())
+				nl = append(nl, temp[depth-1][i].GetRight())
+				if temp[depth-1][i].GetLeft() != nil || temp[depth-1][i].GetRight() != nil {
 					canBreak = false
 				}
 			} else {
@@ -147,7 +200,7 @@ func Tree2Array(t *BinaryTree) [][]*BinaryNode {
 	return temp
 }
 
-func Array2Data(bl [][]*BinaryNode) [][]int64 {
+func Array2Data(bl [][]Node) [][]int64 {
 	h := len(bl)
 	length := int(math.Exp2(float64(h))) - 1
 	tmp := make([][]int64, 0, h)
@@ -172,7 +225,7 @@ func Array2Data(bl [][]*BinaryNode) [][]int64 {
 		for j := 0; j < length; j++ {
 			if tmp[i][j] == 1 {
 				if bl[i][count] != nil {
-					tmp[i][j] = bl[i][count].data
+					tmp[i][j] = bl[i][count].GetData()
 				} else {
 					tmp[i][j] = 0
 				}

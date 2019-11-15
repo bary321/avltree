@@ -18,16 +18,9 @@ func TestBinaryTree_Insert(t *testing.T) {
 		r.Insert(rand.Int63n(40))
 	}
 
-	fmt.Println(r.FindMin())
-	fmt.Println(r.FIndMax())
-	data := Tree2Array(r)
-	if data != nil {
-		fmt.Println(data)
-	}
-	datalist := Array2Data(data)
-
-	fmt.Println(datalist)
-	LinePrint(datalist, 1)
+	fmt.Println(r.FindMin().GetData())
+	fmt.Println(r.FindMax().GetData())
+	r.Display()
 }
 
 func TestLinePrint(t *testing.T) {
