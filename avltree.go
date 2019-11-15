@@ -167,10 +167,24 @@ func Array2Data(bl [][]*BinaryNode) [][]int64 {
 		}
 	}
 
+	for i := 0; i < h; i++ {
+		count := 0
+		for j := 0; j < length; j++ {
+			if tmp[i][j] == 1 {
+				if bl[i][count] != nil {
+					tmp[i][j] = bl[i][count].data
+				} else {
+					tmp[i][j] = 0
+				}
+				count += 1
+			}
+		}
+	}
+
 	return tmp
 }
 
-func LinePrint(data [][]int64) {
+func LinePrint(data [][]int64, length int) {
 	high := len(data)
 	if high < 0 {
 		return
@@ -180,9 +194,9 @@ func LinePrint(data [][]int64) {
 	for i := 0; i < high; i++ {
 		for j := 0; j < l; j++ {
 			if data[i][j] != 0 {
-				fmt.Printf("%d", data[i][j])
+				fmt.Printf("%-*d", length, data[i][j])
 			} else {
-				fmt.Printf("%s", " ")
+				fmt.Printf("%-*s", length, " ")
 			}
 		}
 		fmt.Println()

@@ -14,7 +14,7 @@ func init() {
 func TestBinaryTree_Insert(t *testing.T) {
 	r := new(BinaryTree)
 
-	for i := 0; i < 5; i++ {
+	for i := 0; i < 10; i++ {
 		r.Insert(rand.Int63n(40))
 	}
 
@@ -27,7 +27,7 @@ func TestBinaryTree_Insert(t *testing.T) {
 	datalist := Array2Data(data)
 
 	fmt.Println(datalist)
-	LinePrint(datalist)
+	LinePrint(datalist, 1)
 }
 
 func TestLinePrint(t *testing.T) {
@@ -37,5 +37,5 @@ func TestLinePrint(t *testing.T) {
 		{0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0},
 		{1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
 	}
-	LinePrint(data)
+	LinePrint(data, 1)
 }
