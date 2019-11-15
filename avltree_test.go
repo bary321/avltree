@@ -80,7 +80,7 @@ func TestBinaryTree_Delete(t *testing.T) {
 }
 
 func TestBinaryTree_Delete2(t *testing.T) {
-	for i := 0; i < 100; i++ {
+	for i := 0; i < 100000; i++ {
 		r := new(BinaryTree)
 
 		var d int64 = 0

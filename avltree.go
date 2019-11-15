@@ -211,25 +211,55 @@ func (bt *BinaryTree) PopMax() Node {
 	}
 }
 
+// 用来简化delete函数
+func (bt *BinaryTree) GetData() int64 {
+	return bt.root.GetData()
+}
+
+func (bt *BinaryTree) GetLeft() Node {
+	return bt.root
+}
+
+func (bt *BinaryTree) GetRight() Node {
+	return bt.root
+}
+
+func (bt *BinaryTree) SetLeft(n Node) {
+	bt.root = n
+}
+
+func (bt *BinaryTree) SetRight(n Node) {
+	bt.root = n
+}
+
+func (bt *BinaryTree) SetData(data int64) {
+	bt.root.SetData(data)
+}
+
 func (bt *BinaryTree) Delete(data int64) {
 	if bt.root == nil {
 		return
 	}
-	parentDelete := func() { bt.root = nil }
-	parent2right := func() { bt.root = bt.root.GetRight() }
+
+	tmp := bt.root
+	parent := bt.root
+
+	parentDelete := func() {
+		bt.root = nil
+	}
+	parent2right := func() {
+		bt.root = bt.root.GetRight()
+	}
 	parent2left := func() {
 		bt.root = bt.root.GetLeft()
 	}
 	replace := func(node Node) {
 		tt := &BinaryTree{root: bt.root.GetRight()}
 		nn := tt.PopMin()
-
+		// todo:下面这句是否可以省略
 		bt.root.SetRight(tt.root)
-
 		bt.root.SetData(nn.GetData())
 	}
-	tmp := bt.root
-	parent := bt.root
 	for {
 		if tmp.GetData() == data {
 			if tmp.GetLeft() == nil && tmp.GetRight() == nil {
@@ -260,6 +290,7 @@ func (bt *BinaryTree) Delete(data int64) {
 			replace = func(node Node) {
 				tt := &BinaryTree{root: node}
 				nn := tt.PopMin()
+				parent.SetRight(tt.root)
 				node.SetData(nn.GetData())
 			}
 		} else {
@@ -280,6 +311,7 @@ func (bt *BinaryTree) Delete(data int64) {
 			replace = func(node Node) {
 				tt := &BinaryTree{root: node}
 				nn := tt.PopMin()
+				parent.SetRight(tt.root)
 				node.SetData(nn.GetData())
 			}
 		}
