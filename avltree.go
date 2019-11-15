@@ -21,6 +21,8 @@ type Tree interface {
 	FindMax() Node
 	Insert(int64)
 	Delete(int64)
+	PopMin() Node
+	PopMax() Node
 }
 
 type BinaryNode struct {
@@ -151,8 +153,137 @@ func (bt *BinaryTree) Insert(data int64) {
 
 }
 
-func (bt *BinaryTree) Delete(data int64) {
+func (bt *BinaryTree) PopMin() Node {
+	if bt.root == nil {
+		return nil
+	}
+	tmp := bt.root
+	parent := bt.root
+	for {
+		if tmp.GetLeft() != nil {
+			parent = tmp
+			tmp = tmp.GetLeft()
+		} else {
+			if tmp.GetRight() == nil {
+				if tmp == bt.root {
+					bt.root = nil
+				} else {
+					parent.SetLeft(nil)
+				}
+			} else {
+				if tmp == bt.root {
+					bt.root = bt.root.GetRight()
+				} else {
+					parent.SetLeft(tmp.GetRight())
+				}
+			}
+			return tmp
+		}
+	}
+}
 
+func (bt *BinaryTree) PopMax() Node {
+	if bt.root == nil {
+		return nil
+	}
+	tmp := bt.root
+	parent := bt.root
+	for {
+		if tmp.GetRight() != nil {
+			parent = tmp
+			tmp = tmp.GetRight()
+		} else {
+			if tmp.GetLeft() == nil {
+				if tmp == bt.root {
+					bt.root = nil
+				} else {
+					parent.SetRight(nil)
+				}
+			} else {
+				if tmp == bt.root {
+					bt.root = bt.root.GetLeft()
+				} else {
+					parent.SetRight(tmp.GetLeft())
+				}
+			}
+			return tmp
+		}
+	}
+}
+
+func (bt *BinaryTree) Delete(data int64) {
+	if bt.root == nil {
+		return
+	}
+	parentDelete := func() { bt.root = nil }
+	parent2right := func() { bt.root = bt.root.GetRight() }
+	parent2left := func() {
+		bt.root = bt.root.GetLeft()
+	}
+	replace := func(node Node) {
+		tt := &BinaryTree{root: bt.root.GetRight()}
+		nn := tt.PopMin()
+
+		bt.root.SetRight(tt.root)
+
+		bt.root.SetData(nn.GetData())
+	}
+	tmp := bt.root
+	parent := bt.root
+	for {
+		if tmp.GetData() == data {
+			if tmp.GetLeft() == nil && tmp.GetRight() == nil {
+				parentDelete()
+			} else if tmp.GetLeft() != nil && tmp.GetRight() == nil {
+				parent2left()
+			} else if tmp.GetLeft() == nil && tmp.GetRight() != nil {
+				parent2right()
+			} else {
+				replace(tmp)
+			}
+			return
+		} else if tmp.GetData() < data {
+			parent = tmp
+			tmp = tmp.GetRight()
+			if tmp == nil {
+				return
+			}
+			parentDelete = func() {
+				parent.SetRight(nil)
+			}
+			parent2left = func() {
+				parent.SetRight(tmp.GetLeft())
+			}
+			parent2right = func() {
+				parent.SetRight(tmp.GetRight())
+			}
+			replace = func(node Node) {
+				tt := &BinaryTree{root: node}
+				nn := tt.PopMin()
+				node.SetData(nn.GetData())
+			}
+		} else {
+			parent = tmp
+			tmp = tmp.GetLeft()
+			if tmp == nil {
+				return
+			}
+			parentDelete = func() {
+				parent.SetLeft(nil)
+			}
+			parent2left = func() {
+				parent.SetLeft(tmp.GetLeft())
+			}
+			parent2right = func() {
+				parent.SetLeft(tmp.GetRight())
+			}
+			replace = func(node Node) {
+				tt := &BinaryTree{root: node}
+				nn := tt.PopMin()
+				node.SetData(nn.GetData())
+			}
+		}
+	}
 }
 
 func (bt *BinaryTree) Display() {
@@ -161,6 +292,9 @@ func (bt *BinaryTree) Display() {
 
 // 函数缺陷很明显，当tree过深过大时，性能不行。打印出来的效果也不好看。
 func PrintTree(t Tree) {
+	if t.GetRoot() == nil {
+		return
+	}
 	array := Tree2Array(t)
 	data := Array2Data(array)
 	LinePrint(data, 1)
