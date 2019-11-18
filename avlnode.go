@@ -6,6 +6,7 @@ type AVLNode struct {
 	Depth  int
 	Left   Node
 	Right  Node
+	Del    bool
 }
 
 func (an *AVLNode) GetData() int64 {
@@ -30,4 +31,24 @@ func (an *AVLNode) SetLeft(node Node) {
 
 func (an *AVLNode) SetRight(node Node) {
 	an.Right = node
+}
+
+func (an *AVLNode) IsDel() bool {
+	return an.Del
+}
+
+func (an *AVLNode) GetParent() Node {
+	return an.Parent
+}
+
+func (an *AVLNode) SetParent(node Node) {
+	an.Parent = node
+}
+
+func (an *AVLNode) GetDepth() int {
+	return an.Depth
+}
+
+func (an *AVLNode) SetDepth(d int) {
+	an.Depth = d
 }
