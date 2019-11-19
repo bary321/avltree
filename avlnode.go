@@ -9,6 +9,17 @@ type AVLNode struct {
 	Del    bool
 }
 
+func NewAVLNode(data int64) *AVLNode {
+	a := new(AVLNode)
+	a.Data = data
+	a.Parent = nil
+	a.Depth = 0
+	a.Left = nil
+	a.Right = nil
+	a.Del = false
+	return a
+}
+
 func (an *AVLNode) GetData() int64 {
 	return an.Data
 }

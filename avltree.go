@@ -1,8 +1,15 @@
 package avltree
 
 type AVLTree struct {
-	BinaryTree
 	root Node
+}
+
+func (at *AVLTree) GetRoot() Node {
+	return at.root
+}
+
+func (at *AVLTree) SetRoot(node Node) {
+	at.root = node
 }
 
 func (at *AVLTree) Find(data int64) Node {
@@ -33,23 +40,73 @@ func (at *AVLTree) Find(data int64) Node {
 	}
 }
 
-// todo: update
 func (at *AVLTree) FindMin() Node {
 	if at.root == nil {
 		return nil
 	}
-	tmp := at.root
+	tmp := at.root.(*AVLNode)
+	reverse := false
+	ok := true
 	for {
-		if tmp.GetLeft() != nil {
-			tmp = tmp.GetLeft()
+		if reverse {
+			tmp, ok = tmp.GetParent().(*AVLNode)
+			if !ok {
+				return nil
+			}
+			if tmp == nil {
+				return nil
+			}
+			if !tmp.IsDel() {
+				return tmp
+			}
 		} else {
-
-			return tmp
+			if tmp.GetLeft() != nil {
+				tmp = tmp.GetLeft().(*AVLNode)
+			} else {
+				if tmp.IsDel() {
+					reverse = true
+					continue
+				}
+				return tmp
+			}
 		}
 	}
 }
 
-func (at *AVLTree) Insert(int64) {
+func (at *AVLTree) FindMax() Node {
+	if at.root == nil {
+		return nil
+	}
+	tmp := at.root.(*AVLNode)
+	reverse := false
+	ok := true
+	for {
+		if reverse {
+			tmp, ok = tmp.GetParent().(*AVLNode)
+			if !ok {
+				return nil
+			}
+			if tmp == nil {
+				return nil
+			}
+			if !tmp.IsDel() {
+				return tmp
+			}
+		} else {
+			if tmp.GetRight() != nil {
+				tmp = tmp.GetRight().(*AVLNode)
+			} else {
+				if tmp.IsDel() {
+					reverse = true
+					continue
+				}
+				return tmp
+			}
+		}
+	}
+}
+
+func (at *AVLTree) Insert(data int64) {
 
 }
 
@@ -68,4 +125,8 @@ func (at *AVLTree) PopMin() Node {
 
 func (at *AVLTree) PopMax() Node {
 	return nil
+}
+
+func (at *AVLTree) Display() {
+
 }
