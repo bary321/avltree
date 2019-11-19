@@ -48,6 +48,14 @@ func (an *AVLNode) IsDel() bool {
 	return an.Del
 }
 
+func (an *AVLNode) Delete() {
+	an.Del = true
+}
+
+func (an *AVLNode) Recover() {
+	an.Del = false
+}
+
 func (an *AVLNode) GetParent() Node {
 	return an.Parent
 }

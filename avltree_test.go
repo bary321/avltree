@@ -74,3 +74,25 @@ func TestAVLTree_FindMax(t *testing.T) {
 		t.Error("not nil")
 	}
 }
+
+func TestAVLTree_Delete(t *testing.T) {
+	tr := new(AVLTree)
+	root := NewAVLNode(10)
+	n1 := NewAVLNode(11)
+	n2 := NewAVLNode(12)
+	n1.Parent = root
+	n2.Parent = n1
+	root.SetRight(n1)
+	n1.SetRight(n2)
+	tr.SetRoot(root)
+	if tr.PopMax().GetData() != 12 {
+		t.Error("not 12")
+	}
+	if tr.PopMin().GetData() != 10 {
+		t.Error("not10")
+	}
+	tr.Delete(11)
+	if tr.Find(11) != nil {
+		t.Error("find err")
+	}
+}

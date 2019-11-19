@@ -1,5 +1,6 @@
 package avltree
 
+// 采用懒惰删除
 type AVLTree struct {
 	root Node
 }
@@ -111,20 +112,26 @@ func (at *AVLTree) Insert(data int64) {
 }
 
 func (at *AVLTree) Delete(data int64) {
-	if at.GetRoot() == nil {
-		return
+	node, ok := at.Find(data).(*AVLNode)
+	if ok {
+		node.Delete()
 	}
-
-	//tmp := at.Delete
-
 }
 
 func (at *AVLTree) PopMin() Node {
-	return nil
+	node, ok := at.FindMin().(*AVLNode)
+	if ok {
+		node.Delete()
+	}
+	return node
 }
 
 func (at *AVLTree) PopMax() Node {
-	return nil
+	node, ok := at.FindMax().(*AVLNode)
+	if ok {
+		node.Delete()
+	}
+	return node
 }
 
 func (at *AVLTree) Display() {
