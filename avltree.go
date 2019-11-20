@@ -108,7 +108,53 @@ func (at *AVLTree) FindMax() Node {
 }
 
 func (at *AVLTree) Insert(data int64) {
+	if at.root == nil {
+		at.root = NewAVLNode(data)
+		at.root.(*AVLNode).SetDepth(1)
+		return
+	}
+}
 
+func RightSingleRotation(node *AVLNode) Node {
+	left := node.Left.(*AVLNode)
+	var c *AVLNode
+	if left.Right != nil {
+		c = left.Right.(*AVLNode)
+		c.Parent = node
+	}
+	up := node.Parent
+	left.Right = node
+	node.SetLeft(c)
+	node.Parent = left
+	left.Parent = up
+	return left
+}
+
+func LeftSingleRotation(node *AVLNode) Node {
+	up := node.Parent
+	right := node.Right.(*AVLNode)
+	node.Right = node.Right.GetLeft()
+	right.SetParent(up)
+	right.SetLeft(node)
+	node.SetParent(right)
+	if node.Right != nil {
+		node.Right.(*AVLNode).SetParent(node)
+	}
+	return right
+}
+
+func RightDoubleRotation(node *AVLNode) Node {
+	if node.Left != nil {
+		node.Left = LeftSingleRotation(node.Left.(*AVLNode))
+	}
+	return RightSingleRotation(node)
+}
+
+func LeftDoubleRotation(node *AVLNode) Node {
+	if node.Right != nil {
+		node.Right = LeftSingleRotation(node.Right.(*AVLNode))
+	}
+	return LeftSingleRotation(node)
 }
 
 func (at *AVLTree) Delete(data int64) {
@@ -135,5 +181,5 @@ func (at *AVLTree) PopMax() Node {
 }
 
 func (at *AVLTree) Display() {
-
+	PrintTree(at)
 }

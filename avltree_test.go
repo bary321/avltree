@@ -1,6 +1,8 @@
 package avltree
 
 import (
+	"fmt"
+	"reflect"
 	"testing"
 )
 
@@ -95,4 +97,79 @@ func TestAVLTree_Delete(t *testing.T) {
 	if tr.Find(11) != nil {
 		t.Error("find err")
 	}
+}
+
+func TestRightSingleRotation(t *testing.T) {
+	tr := new(AVLTree)
+	root := NewAVLNode(11)
+	n1 := NewAVLNode(9)
+	n2 := NewAVLNode(8)
+	n1.Parent = root
+	n2.Parent = n1
+	root.SetLeft(n1)
+	n1.SetLeft(n2)
+	tr.SetRoot(root)
+	n3 := NewAVLNode(13)
+	root.Right = n3
+	n3.Parent = root
+	n4 := NewAVLNode(10)
+	n1.SetRight(n4)
+	n4.Parent = n1
+	tr.Display()
+	fmt.Println("-------------")
+	tr.root = RightSingleRotation(root)
+	tr.Display()
+	fmt.Println("-------------")
+	tr.root = LeftSingleRotation(tr.root.(*AVLNode))
+	tr.Display()
+}
+
+func TestRightDoubleRotation(t *testing.T) {
+	tr := new(AVLTree)
+	root := NewAVLNode(11)
+	n1 := NewAVLNode(9)
+	n2 := NewAVLNode(8)
+	n1.Parent = root
+	n2.Parent = n1
+	root.SetLeft(n1)
+	n1.SetLeft(n2)
+	tr.SetRoot(root)
+	n3 := NewAVLNode(13)
+	root.Right = n3
+	n3.Parent = root
+	n4 := NewAVLNode(10)
+	n1.SetRight(n4)
+	n4.Parent = n1
+	tr.Display()
+	tr.root = RightDoubleRotation(root)
+	tr.Display()
+}
+
+func TestLeftDoubleRotation(t *testing.T) {
+	tr := new(AVLTree)
+	root := NewAVLNode(10)
+	n1 := NewAVLNode(15)
+	n2 := NewAVLNode(13)
+	n1.Parent = root
+	n2.Parent = n1
+	root.SetRight(n1)
+	n1.SetLeft(n2)
+	tr.SetRoot(root)
+	n3 := NewAVLNode(9)
+	root.Left = n3
+	n3.Parent = root
+	n4 := NewAVLNode(16)
+	n1.SetRight(n4)
+	n4.Parent = n1
+	tr.Display()
+	tr.root = LeftDoubleRotation(root)
+	tr.Display()
+}
+
+func TestIsNil(t *testing.T) {
+	a := make([]Node, 0, 1)
+	a = append(a, nil)
+	fmt.Println(IsNil(a[0]))
+	fmt.Println(reflect.ValueOf(a[0]))
+	fmt.Println(reflect.TypeOf(a[0]))
 }

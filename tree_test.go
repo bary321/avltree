@@ -138,3 +138,13 @@ func TestLinePrint(t *testing.T) {
 	}
 	LinePrint(data, 1)
 }
+
+func TestPrintTree(t *testing.T) {
+	tr := new(BinaryTree)
+	tr.Insert(10)
+	tr.Insert(9)
+	tr.Insert(11)
+	tr.Insert(8)
+	tr.Insert(13)
+	tr.Display()
+}
