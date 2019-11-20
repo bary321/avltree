@@ -3,6 +3,7 @@ package avltree
 import (
 	"fmt"
 	"math"
+	"reflect"
 )
 
 // 函数缺陷很明显，当tree过深过大时，性能不行。打印出来的效果也不好看。
@@ -29,7 +30,7 @@ func Tree2Array(t Tree) [][]Node {
 		length := len(temp[depth-1])
 		canBreak := true
 		for i := 0; i < length; i++ {
-			if temp[depth-1][i] != nil {
+			if !IsNil(temp[depth-1][i]) {
 				nl = append(nl, temp[depth-1][i].GetLeft())
 				nl = append(nl, temp[depth-1][i].GetRight())
 				if temp[depth-1][i].GetLeft() != nil || temp[depth-1][i].GetRight() != nil {
@@ -73,7 +74,7 @@ func Array2Data(bl [][]Node) [][]int64 {
 		count := 0
 		for j := 0; j < length; j++ {
 			if tmp[i][j] == 1 {
-				if bl[i][count] != nil {
+				if !IsNil(bl[i][count]) {
 					tmp[i][j] = bl[i][count].GetData()
 				} else {
 					tmp[i][j] = 0
@@ -103,4 +104,14 @@ func LinePrint(data [][]int64, length int) {
 		}
 		fmt.Println()
 	}
+}
+
+func IsNil(i interface{}) bool {
+	if reflect.TypeOf(i) == nil {
+		return true
+	}
+	if reflect.ValueOf(i).IsNil() {
+		return true
+	}
+	return false
 }
