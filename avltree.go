@@ -5,6 +5,16 @@ type AVLTree struct {
 	root Node
 }
 
+func (at *AVLTree) GetData() int64 {
+	return 0
+}
+
+func (at *AVLTree) GetLeft() Node      { return at.root }
+func (at *AVLTree) GetRight() Node     { return at.root }
+func (at *AVLTree) SetData(int64)      {}
+func (at *AVLTree) SetLeft(node Node)  { at.root = node }
+func (at *AVLTree) SetRight(node Node) { at.root = node }
+
 func (at *AVLTree) GetRoot() Node {
 	return at.root
 }
@@ -108,10 +118,174 @@ func (at *AVLTree) FindMax() Node {
 }
 
 func (at *AVLTree) Insert(data int64) {
-	if at.root == nil {
-		at.root = NewAVLNode(data)
-		at.root.(*AVLNode).SetDepth(1)
+	node, isleft := at.InsertLeaf(data)
+	if node == nil {
 		return
+	}
+	parent, ok := node.GetParent().(*AVLNode)
+	if !ok {
+		return
+	}
+	maxLeftDepth := node.Depth
+	maxRightDepth := node.Depth
+	maxdepth := node.Depth
+	for {
+		if parent.Left == node {
+			maxRightDepth = MaxDepth(parent.Right)
+			if maxRightDepth == 0 {
+				maxRightDepth = parent.Depth
+			}
+			if maxdepth-maxRightDepth > 1 {
+				ancestor := parent.Parent
+				if IsNil(ancestor) {
+					ancestor = at
+				}
+				var rt Node
+				if isleft {
+					rt = RightSingleRotation(parent)
+				} else {
+					rt = RightDoubleRotation(parent)
+				}
+				UpdateDepth(rt.(*AVLNode), parent.Depth)
+				Replace(ancestor, parent, rt)
+				return
+			}
+			if maxRightDepth > maxdepth {
+				maxdepth = maxRightDepth
+			}
+		}
+		if parent.Right == node {
+			maxLeftDepth = MaxDepth(parent.Left)
+			if maxLeftDepth == 0 {
+				maxLeftDepth = parent.Depth
+			}
+			if maxdepth-maxLeftDepth > 1 {
+				ancestor := parent.Parent
+				if IsNil(ancestor) {
+					ancestor = at
+				}
+				var rt Node
+				if !isleft {
+					rt = LeftSingleRotation(parent)
+				} else {
+					rt = LeftDoubleRotation(parent)
+				}
+				UpdateDepth(rt.(*AVLNode), parent.Depth)
+				Replace(ancestor, parent, rt)
+				return
+			}
+			if maxLeftDepth > maxdepth {
+				maxdepth = maxLeftDepth
+			}
+		}
+		node = parent
+		if IsNil(parent.GetParent()) {
+			break
+		} else {
+			parent = parent.GetParent().(*AVLNode)
+		}
+	}
+}
+
+func Replace(parent, src, dst Node) {
+	if parent.GetLeft() == src {
+		parent.SetLeft(dst)
+	} else if parent.GetRight() == src {
+		parent.SetRight(dst)
+	}
+}
+
+func MaxDepth(node Node) int {
+	if IsNil(node) {
+		return 0
+	}
+	if IsNil(node.GetLeft()) && IsNil(node.GetRight()) {
+		return node.(*AVLNode).Depth
+	}
+
+	maxRight := MaxDepth(node.GetRight())
+	maxLeft := MaxDepth(node.GetLeft())
+	if maxRight > maxLeft {
+		return maxRight
+	} else {
+		return maxLeft
+	}
+}
+
+func (at *AVLTree) MaxLeftDepth() int {
+	node := at.FindMin().(*AVLNode)
+	return node.Depth
+}
+
+func (at *AVLTree) MaxRightDepth() int {
+	node := at.FindMax().(*AVLNode)
+	return node.Depth
+}
+
+func (at *AVLTree) InsertLeaf(data int64) (*AVLNode, bool) {
+	if at.root == nil {
+		tmp := NewAVLNode(data)
+		//tmp.Parent = at
+		at.root = tmp
+		at.root.(*AVLNode).SetDepth(1)
+		return tmp, false
+	}
+	isleft := false
+	parent := at.root.(*AVLNode)
+	tmp := at.root.(*AVLNode)
+	//ok := false
+	for {
+		parent = tmp
+		if tmp.GetData() < data {
+			tmp, _ = tmp.GetRight().(*AVLNode)
+			isleft = false
+			if IsNil(tmp) {
+				tmp = NewAVLNode(data)
+				tmp.Parent = parent
+				tmp.Depth = parent.Depth + 1
+				parent.Right = tmp
+				return tmp, isleft
+			}
+			continue
+		} else if tmp.GetData() > data {
+			tmp, _ = tmp.GetLeft().(*AVLNode)
+			isleft = true
+			if IsNil(tmp) {
+				tmp = NewAVLNode(data)
+				tmp.Parent = parent
+				tmp.Depth = parent.Depth + 1
+				parent.Left = tmp
+				return tmp, isleft
+			}
+			continue
+		} else {
+			if tmp.Del {
+				tmp.Del = false
+			}
+			return nil, isleft
+		}
+	}
+}
+
+func DepthDiff(node *AVLNode) int {
+	left, ok := node.GetLeft().(*AVLNode)
+	if !ok {
+		left = NewAVLNode(0)
+	}
+	right, ok := node.GetRight().(*AVLNode)
+	if !ok {
+		right = NewAVLNode(0)
+	}
+	return left.Depth - right.Depth
+}
+
+func UpdateDepth(node *AVLNode, depth int) {
+	node.Depth = depth
+	if !IsNil(node.Left) {
+		UpdateDepth(node.Left.(*AVLNode), depth+1)
+	}
+	if !IsNil(node.Right) {
+		UpdateDepth(node.Right.(*AVLNode), depth+1)
 	}
 }
 
@@ -152,7 +326,7 @@ func RightDoubleRotation(node *AVLNode) Node {
 
 func LeftDoubleRotation(node *AVLNode) Node {
 	if node.Right != nil {
-		node.Right = LeftSingleRotation(node.Right.(*AVLNode))
+		node.Right = RightSingleRotation(node.Right.(*AVLNode))
 	}
 	return LeftSingleRotation(node)
 }
