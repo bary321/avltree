@@ -118,6 +118,82 @@ func (at *AVLTree) FindMax() Node {
 }
 
 func (at *AVLTree) Insert(data int64) {
+	node, _ := at.InsertLeaf(data)
+	if node == nil {
+		return
+	}
+	parent, ok := node.GetParent().(*AVLNode)
+	if !ok {
+		return
+	}
+	//grandparent, ok := parent.GetParent().(*AVLNode)
+	//if !ok {
+	//	return
+	//}
+	parentLeftDepth := node.Depth
+	parentRightDepth := node.Depth
+	//grandparentLeftDepth := node.Depth
+	//grandparentRightDepth := node.Depth
+	maxDepth := node.Depth
+	banlance := 0
+	prebanlance := 0
+	var replace Node
+	for {
+		if parent.Left == node {
+			parentLeftDepth = maxDepth
+			parentRightDepth = MaxDepth(parent.Right)
+			if parentRightDepth == 0 {
+				parentRightDepth = parent.Depth
+			}
+		} else {
+			parentRightDepth = maxDepth
+			parentLeftDepth = MaxDepth(parent.Left)
+			if parentLeftDepth == 0 {
+				parentLeftDepth = parent.Depth
+			}
+		}
+		banlance = parentLeftDepth - parentRightDepth
+		grandparent := parent.Parent
+		if IsNil(grandparent) {
+			grandparent = at
+		}
+		if banlance < -1 {
+			// 右边失衡，向左转
+
+			// 插入点在旋转点前序节点的右边
+			// 和旋转点的失衡边相同，只需要单旋转
+			if prebanlance < 0 {
+				replace = LeftSingleRotation(parent)
+			} else {
+				replace = LeftDoubleRotation(parent)
+			}
+		} else if banlance > 1 {
+			// 左边失衡，向右转
+
+			// 插入点在旋转点前序节点的左边
+			// 和旋转点的失衡边相同，只需要单旋转
+			if prebanlance > 0 {
+				replace = RightSingleRotation(parent)
+			} else {
+				replace = RightDoubleRotation(parent)
+			}
+		}
+		prebanlance = banlance
+		if replace != nil {
+			UpdateDepth(replace.(*AVLNode), parent.Depth)
+			Replace(grandparent, parent, replace)
+			return
+		}
+		node = parent
+		if IsNil(parent.GetParent()) {
+			break
+		} else {
+			parent = parent.GetParent().(*AVLNode)
+		}
+	}
+}
+
+func (at *AVLTree) Insert_old(data int64) {
 	node, isleft := at.InsertLeaf(data)
 	if node == nil {
 		return

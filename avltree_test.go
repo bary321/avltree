@@ -316,7 +316,7 @@ func TestAVLTree_Insert5(t *testing.T) {
 func TestAVLTree_Insert6(t *testing.T) {
 	tmp := []int64{3, 11, 41, 36, 14, 18, 43, 19, 38, 12, 8, 46, 32}
 	r := new(AVLTree)
-	for i := 0; i < 12; i++ {
+	for i := 0; i < 13; i++ {
 		//if i == 12 {
 		//	r.Display()
 		//	fmt.Println()
